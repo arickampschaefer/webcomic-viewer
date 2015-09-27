@@ -39,11 +39,9 @@ class ViewController: UIViewController {
         parseHTMLFromURL(nextComic!)
     }
     
-    // MARK: - HTML Parsing
+    // MARK: - Networking/HTML Parsing
     
     func parseHTMLFromURL(currentComic: String) {
-        
-        
         var url = NSURL(string: currentComic)
         var session = NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: currentComic)!,
             completionHandler : {(data, response, error) -> Void in
