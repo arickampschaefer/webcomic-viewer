@@ -376,6 +376,8 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(PROJECT_DIR)",
+					../Networking,
 					"$(SDKROOT)/usr/include/libxml2",
 				);
 				INFOPLIST_FILE = "webcomic-viewer/Info.plist";
@@ -394,6 +396,8 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(PROJECT_DIR)",
+					../Networking,
 					"$(SDKROOT)/usr/include/libxml2",
 				);
 				INFOPLIST_FILE = "webcomic-viewer/Info.plist";

@@ -42,37 +42,24 @@ class ViewController: UIViewController {
     // MARK: - HTML Parsing
     
     func parseHTMLFromURL(currentComic: String) {
-
-        let HTMLData = NSData(contentsOfURL: NSURL(string: currentComic)!)!
-        
-        let parser = TFHpple(HTMLData: HTMLData)
-        // query for image
-        if let elements = parser.searchWithXPathQuery("//div[@class='entry']//img/@src") as? [TFHppleElement]{
-            for element in elements{
-                comicImage.image = UIImage(data: NSData(contentsOfURL: NSURL(string: element.content)!)!)
-            }
-        }
-        // query for title
-        if let elements = parser.searchWithXPathQuery("//div[@class='post']/center/h2/a") as? [TFHppleElement]{
-            for element in elements{
-                comicTitle.text = element.content
-            }
-        }
-        // query for next comic
-        if let elements = parser.searchWithXPathQuery("//div[@class='alignright']/a/@href") as? [TFHppleElement]{
-            for element in elements{
-                nextComic = element.content
-                println(element.content)
-            }
-        }
-        // query for previous comic
-        if let elements = parser.searchWithXPathQuery("//div[@class='alignleft']/a/@href") as? [TFHppleElement]{
-            for element in elements{
-                previousComic = element.content
-                println(element.content)
-            }
-        }
-
+        var url = NSURL(string: currentComic)
+        var session = NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: currentComic)!,
+            completionHandler : {(data, response, error) -> Void in
+                let HTMLData = data
+                let parser = TFHpple(HTMLData: HTMLData)
+                // query for image
+                if let elements = parser.searchWithXPathQuery("//div[@class='entry']//img/@src|//div[@class='post']/center/h2/a|//div[@class='alignright']|//div[@class='alignleft']") as? [TFHppleElement]{
+                    if elements[0].firstChildWithTagName("a") != nil {
+                        self.previousComic = elements[0].firstChildWithTagName("a").objectForKey("href")
+                    }
+                    if elements[1].firstChildWithTagName("a") != nil {
+                        self.nextComic = elements[1].firstChildWithTagName("a").objectForKey("href")
+                    }
+                    self.comicTitle.text = elements[2].content
+                    self.comicImage.image =  UIImage(data: NSData(contentsOfURL: NSURL(string: elements[3].content)!)!)
+                }
+        })
+        session.resume()
     }
 
 }
