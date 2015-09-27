@@ -45,11 +45,13 @@ class ViewController: UIViewController {
         var url = NSURL(string: currentComic)
         var session = NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: currentComic)!,
             completionHandler : {(data, response, error) -> Void in
-                dispatch_async(dispatch_get_main_queue(), {
-                    let HTMLData = data
-                    let parser = TFHpple(HTMLData: HTMLData)
-                    // query for image
-                    if let elements = parser.searchWithXPathQuery("//div[@class='entry']//img/@src|//div[@class='post']/center/h2/a|//div[@class='alignright']|//div[@class='alignleft']") as? [TFHppleElement]{
+                let HTMLData = data
+                let parser = TFHpple(HTMLData: HTMLData)
+                // query for previous, next comics, title, and image url
+                if let elements = parser.searchWithXPathQuery("//div[@class='entry']//img/@src|//div[@class='post']/center/h2/a|//div[@class='alignright']|//div[@class='alignleft']") as? [TFHppleElement]{
+                    // final async operation, getting the image url
+                    var comicImageFromURL = UIImage(data: NSData(contentsOfURL: NSURL(string: elements[3].content)!)!)
+                    dispatch_async(dispatch_get_main_queue(), {
                         if elements[0].firstChildWithTagName("a") != nil {
                             self.previousComic = elements[0].firstChildWithTagName("a").objectForKey("href")
                         }
@@ -57,9 +59,9 @@ class ViewController: UIViewController {
                             self.nextComic = elements[1].firstChildWithTagName("a").objectForKey("href")
                         }
                         self.comicTitle.text = elements[2].content
-                        self.comicImage.image =  UIImage(data: NSData(contentsOfURL: NSURL(string: elements[3].content)!)!)
-                    }
-                })
+                        self.comicImage.image =  comicImageFromURL
+                    })
+                }
         })
         session.resume()
     }
